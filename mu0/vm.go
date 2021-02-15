@@ -35,7 +35,7 @@ func RunProgram(programMachineCode []uint16, debug bool) (VirtualMachineState, e
 		}
 		instruction.Execute(&vm)
 		if debug {
-			fmt.Printf("Executing instruction: %#v, new program counter 0x%x\n", instruction, vm.ProgramCounter)
+			fmt.Printf("Executing instruction: %#v, new program counter 0x%04x, new accumulator 0x%04x\n", instruction, vm.ProgramCounter, vm.Accumulator)
 		}
 	}
 

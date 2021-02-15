@@ -15,8 +15,7 @@ func createStopInstruction() Instruction {
 }
 
 // Stops the program.
-type stopInstruction struct {
-}
+type stopInstruction struct{}
 
 var stopInstructionSingleton = new(stopInstruction)
 

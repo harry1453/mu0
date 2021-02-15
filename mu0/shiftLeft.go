@@ -15,8 +15,7 @@ func createShiftLeftInstruction() Instruction {
 }
 
 // Bitwise shifts the accumulator left by one bit
-type shiftLeftInstruction struct {
-}
+type shiftLeftInstruction struct{}
 
 var shiftLeftInstructionSingleton = new(shiftLeftInstruction)
 

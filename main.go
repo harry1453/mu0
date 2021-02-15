@@ -40,12 +40,18 @@ func main() {
 
 	fmt.Println()
 	fmt.Println("Final machine state at stop or error:")
-	fmt.Printf("Program Counter:\t0x%x\n", vm.ProgramCounter)
-	fmt.Printf("Accumulator:\t0x%x\n", vm.Accumulator)
-	fmt.Printf("Running:\t0x%t\n", vm.Running)
-	fmt.Println("Memory Content:")
-	fmt.Println("Address\tData")
+	fmt.Printf("Program Counter: 0x%x\n", vm.ProgramCounter)
+	fmt.Printf("Accumulator:     0x%x\n", vm.Accumulator)
+	fmt.Printf("Running:         %t\n", vm.Running)
+	fmt.Println("Memory Content (up to last non-zero address):")
+	fmt.Println("Address | Data")
+	lastUsedAddress := 0
 	for i := 0; i < len(vm.Memory); i++ {
-		fmt.Printf("0x%x:\t0x%x\n", i, vm.Memory[i])
+		if vm.Memory[i] != 0 {
+			lastUsedAddress = i
+		}
+	}
+	for i := 0; i < lastUsedAddress+1; i++ {
+		fmt.Printf("0x%04x  | 0x%04x\n", i, vm.Memory[i])
 	}
 }
