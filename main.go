@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 
-	machineCode, err := mu0.ParseAssembly(string(fileData))
+	machineCode, err := mu0.Assemble(string(fileData))
 	if err != nil {
 		panic(err)
 	}

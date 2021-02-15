@@ -14,7 +14,7 @@ var assemblyOpcodeToMachineOpcode = make(map[string]uint8)
 var opcodeWithArgumentParsers = make(map[uint8]func(argument uint16) Instruction)
 var opcodeWithoutArgumentParsers = make(map[uint8]func() Instruction)
 
-func ParseAssembly(assembly string) ([]uint16, error) {
+func Assemble(assembly string) ([]uint16, error) {
 	lines := strings.Split(assembly, "\n")
 	var instructions []uint16
 	for i, line := range lines {
@@ -92,7 +92,7 @@ func ParseMachineInstruction(instruction uint16) (Instruction, error) {
 	}
 }
 
-func ParseMachineCode(machineCode []uint16) ([]Instruction, error) {
+func Disassemble(machineCode []uint16) ([]Instruction, error) {
 	var instructions []Instruction
 	for i, instruction := range machineCode {
 		parsedInstruction, err := ParseMachineInstruction(instruction)
