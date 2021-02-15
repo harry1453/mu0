@@ -8,26 +8,29 @@ import (
 )
 
 func main() {
-	fileData, err := ioutil.ReadFile("assembly.mu0")
+	fileData, err := ioutil.ReadFile("example.mu0")
 	if err != nil {
 		panic(err)
 	}
 
-	instructions, err := mu0.ParseAssembly(string(fileData))
+	machineCode, err := mu0.ParseAssembly(string(fileData))
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Parsed assembly:")
-	var machineCode []uint16
-	for _, instruction := range instructions {
-		fmt.Println(instruction.Disassemble())
-		machineCode = append(machineCode, instruction.Assemble())
-	}
-
-	fmt.Println()
 	fmt.Println("Machine code:")
 	fmt.Println(hex.EncodeToString(mu0.ByteArrayFromMachineCode(machineCode)))
+
+	fmt.Println()
+	fmt.Println("Disassembled:")
+	for _, instruction := range machineCode {
+		parsedInstruction, err := mu0.ParseMachineInstruction(instruction)
+		if err != nil {
+			fmt.Printf("%04x\n", instruction)
+		} else {
+			fmt.Println(parsedInstruction.Disassemble())
+		}
+	}
 
 	fmt.Println()
 	fmt.Println("Running program...")

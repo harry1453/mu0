@@ -1,7 +1,7 @@
 package mu0
 
 const (
-	shiftRightAssemblyOpcode = "STP"
+	shiftRightAssemblyOpcode = "LSR"
 	shiftRightOpcode         = 0b1010
 )
 

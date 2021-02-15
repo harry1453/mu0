@@ -8,14 +8,15 @@ import (
 )
 
 var assemblyInstructionRegex = regexp.MustCompile("^[\\t ]*([A-Z]{3})[\\t ]*(\\w+)?[\\t ]*(?://.+)?$")
+var dataInstructionRegex = regexp.MustCompile("^[\\t ]*(\\w+)?[\\t ]*(?://.+)?$")
 
 var assemblyOpcodeToMachineOpcode = make(map[string]uint8)
 var opcodeWithArgumentParsers = make(map[uint8]func(argument uint16) Instruction)
 var opcodeWithoutArgumentParsers = make(map[uint8]func() Instruction)
 
-func ParseAssembly(assembly string) ([]Instruction, error) {
+func ParseAssembly(assembly string) ([]uint16, error) {
 	lines := strings.Split(assembly, "\n")
-	var instructions []Instruction
+	var instructions []uint16
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
 		// Ignore blank lines and comments
@@ -25,7 +26,20 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 
 		matches := assemblyInstructionRegex.FindStringSubmatch(line)
 		if len(matches) < 3 {
-			return nil, fmt.Errorf("parse error on line %d", i+1)
+			// This line is static data, not an instruction
+			matches := dataInstructionRegex.FindStringSubmatch(line)
+			if len(matches) < 2 {
+				return nil, fmt.Errorf("parse error on line %d", i+1)
+			}
+			staticData, err := strconv.ParseUint(matches[1], 0, 64)
+			if err != nil {
+				return nil, err
+			}
+			if staticData > 1<<16 {
+				return nil, fmt.Errorf("static data 0x%04d too big, max %d on line %d", staticData, 1<<16, i+1)
+			}
+			instructions = append(instructions, uint16(staticData))
+			continue
 		}
 
 		opcodeString := matches[1]
@@ -45,7 +59,7 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 				return nil, err
 			}
 			if argument > 1<<12 {
-				return nil, fmt.Errorf("argument %d too big, max %d on line %d", argument, 1<<12, i+1)
+				return nil, fmt.Errorf("argument 0x%04d too big, max %d on line %d", argument, 1<<12, i+1)
 			}
 			instruction = opcodeParser(uint16(argument))
 		} else {
@@ -57,7 +71,7 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 			}
 		}
 
-		instructions = append(instructions, instruction)
+		instructions = append(instructions, instruction.Assemble())
 	}
 
 	return instructions, nil
