@@ -28,3 +28,7 @@ func (instruction *jumpInstruction) Assemble() (result uint16) {
 func (instruction *jumpInstruction) Disassemble() string {
 	return disassembleInstruction(jumpAssemblyOpcode, instruction.memoryAddress)
 }
+
+func (instruction *jumpInstruction) Execute(vm *VirtualMachineState) {
+	vm.ProgramCounter = instruction.memoryAddress
+}

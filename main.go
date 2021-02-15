@@ -28,4 +28,24 @@ func main() {
 	fmt.Println()
 	fmt.Println("Machine code:")
 	fmt.Println(hex.EncodeToString(mu0.ByteArrayFromMachineCode(machineCode)))
+
+	fmt.Println()
+	fmt.Println("Running program...")
+	vm, err := mu0.RunProgram(machineCode, true)
+	if err != nil {
+		fmt.Printf("Error running program: %v\n", err)
+	} else {
+		fmt.Println("Success!")
+	}
+
+	fmt.Println()
+	fmt.Println("Final machine state at stop or error:")
+	fmt.Printf("Program Counter:\t0x%x\n", vm.ProgramCounter)
+	fmt.Printf("Accumulator:\t0x%x\n", vm.Accumulator)
+	fmt.Printf("Running:\t0x%t\n", vm.Running)
+	fmt.Println("Memory Content:")
+	fmt.Println("Address\tData")
+	for i := 0; i < len(vm.Memory); i++ {
+		fmt.Printf("0x%x:\t0x%x\n", i, vm.Memory[i])
+	}
 }

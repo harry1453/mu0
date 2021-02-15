@@ -28,3 +28,8 @@ func (instruction *loadImmediateInstruction) Assemble() (result uint16) {
 func (instruction *loadImmediateInstruction) Disassemble() string {
 	return disassembleInstruction(loadImmediateAssemblyOpcode, instruction.constant)
 }
+
+func (instruction *loadImmediateInstruction) Execute(vm *VirtualMachineState) {
+	vm.Accumulator = instruction.constant
+	vm.ProgramCounter++
+}

@@ -27,3 +27,7 @@ func (instruction *stopInstruction) Assemble() (result uint16) {
 func (instruction *stopInstruction) Disassemble() string {
 	return stopAssemblyOpcode
 }
+
+func (instruction *stopInstruction) Execute(vm *VirtualMachineState) {
+	vm.Running = false
+}

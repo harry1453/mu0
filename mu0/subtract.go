@@ -28,3 +28,8 @@ func (instruction *subtractInstruction) Assemble() (result uint16) {
 func (instruction *subtractInstruction) Disassemble() string {
 	return disassembleInstruction(subtractAssemblyOpcode, instruction.memoryAddress)
 }
+
+func (instruction *subtractInstruction) Execute(vm *VirtualMachineState) {
+	vm.Accumulator -= vm.Memory[instruction.memoryAddress]
+	vm.ProgramCounter++
+}

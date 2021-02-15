@@ -27,3 +27,8 @@ func (instruction *shiftLeftInstruction) Assemble() (result uint16) {
 func (instruction *shiftLeftInstruction) Disassemble() string {
 	return shiftLeftAssemblyOpcode
 }
+
+func (instruction *shiftLeftInstruction) Execute(vm *VirtualMachineState) {
+	vm.Accumulator <<= 1
+	vm.ProgramCounter++
+}

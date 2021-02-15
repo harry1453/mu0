@@ -28,3 +28,11 @@ func (instruction *jumpIfEqualInstruction) Assemble() (result uint16) {
 func (instruction *jumpIfEqualInstruction) Disassemble() string {
 	return disassembleInstruction(jumpIfEqualAssemblyOpcode, instruction.memoryAddress)
 }
+
+func (instruction *jumpIfEqualInstruction) Execute(vm *VirtualMachineState) {
+	if vm.Accumulator == 0 {
+		vm.ProgramCounter = instruction.memoryAddress
+	} else {
+		vm.ProgramCounter++
+	}
+}

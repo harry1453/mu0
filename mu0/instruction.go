@@ -7,6 +7,8 @@ type Instruction interface {
 	Assemble() uint16
 	// Disassemble into assembly
 	Disassemble() string
+	// Execute this instruction on the virtual machine
+	Execute(vm *VirtualMachineState)
 }
 
 // Converts an opcode and argument to bytecode instruction

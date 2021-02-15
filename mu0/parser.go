@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var assemblyInstructionRegex = regexp.MustCompile("^[\\t ]*([A-Z]{3})[\\t ]*(\\w+)[\\t ]*(?://.+)?$")
+var assemblyInstructionRegex = regexp.MustCompile("^[\\t ]*([A-Z]{3})[\\t ]*(\\w+)?[\\t ]*(?://.+)?$")
 
 var assemblyOpcodeToMachineOpcode = make(map[string]uint8)
 var opcodeWithArgumentParsers = make(map[uint8]func(argument uint16) Instruction)
@@ -24,7 +24,7 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 		}
 
 		matches := assemblyInstructionRegex.FindStringSubmatch(line)
-		if len(matches) < 2 {
+		if len(matches) < 3 {
 			return nil, fmt.Errorf("parse error on line %d", i+1)
 		}
 
@@ -37,12 +37,15 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 		var instruction Instruction
 		opcodeParser, ok := opcodeWithArgumentParsers[opcode]
 		if ok {
+			if matches[2] == "" {
+				return nil, fmt.Errorf("argument missing on line %d", i+1)
+			}
 			argument, err := strconv.ParseUint(matches[2], 0, 64)
 			if err != nil {
 				return nil, err
 			}
 			if argument > 1<<12 {
-				return nil, fmt.Errorf("argument %d too big, max %d", argument, 1<<12)
+				return nil, fmt.Errorf("argument %d too big, max %d on line %d", argument, 1<<12, i+1)
 			}
 			instruction = opcodeParser(uint16(argument))
 		} else {
@@ -60,16 +63,29 @@ func ParseAssembly(assembly string) ([]Instruction, error) {
 	return instructions, nil
 }
 
+func ParseMachineInstruction(instruction uint16) (Instruction, error) {
+	opcode, argument := parseInstruction(instruction)
+	opcodeParser, ok := opcodeWithArgumentParsers[opcode]
+	if ok {
+		return opcodeParser(argument), nil
+	} else {
+		opcodeParser, ok := opcodeWithoutArgumentParsers[opcode]
+		if ok {
+			return opcodeParser(), nil
+		} else {
+			return nil, fmt.Errorf("unrecognized opcode 0x%x", opcode)
+		}
+	}
+}
+
 func ParseMachineCode(machineCode []uint16) ([]Instruction, error) {
 	var instructions []Instruction
 	for i, instruction := range machineCode {
-		opcode, argument := parseInstruction(instruction)
-		opcodeParser, ok := opcodeWithArgumentParsers[opcode]
-		if !ok {
-			return nil, fmt.Errorf("error processing instruction %d: did not recognize opcode 0x%x", i, opcode)
+		parsedInstruction, err := ParseMachineInstruction(instruction)
+		if err != nil {
+			return nil, fmt.Errorf("error processing instruction %d: %v", i, err)
 		}
-
-		instructions = append(instructions, opcodeParser(argument))
+		instructions = append(instructions, parsedInstruction)
 	}
 
 	return instructions, nil
