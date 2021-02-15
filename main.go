@@ -19,7 +19,7 @@ func main() {
 	}
 
 	fmt.Println("Parsed assembly:")
-	var machineCode []byte
+	var machineCode []uint16
 	for _, instruction := range instructions {
 		fmt.Println(instruction.Disassemble())
 		machineCode = append(machineCode, instruction.Assemble())
@@ -27,5 +27,5 @@ func main() {
 
 	fmt.Println()
 	fmt.Println("Machine code:")
-	fmt.Println(hex.EncodeToString(machineCode))
+	fmt.Println(hex.EncodeToString(mu0.ByteArrayFromMachineCode(machineCode)))
 }
