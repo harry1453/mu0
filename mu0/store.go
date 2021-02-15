@@ -31,5 +31,5 @@ func (instruction *storeInstruction) Disassemble() string {
 
 func (instruction *storeInstruction) Execute(vm *VirtualMachineState) {
 	vm.Memory[instruction.memoryAddress] = vm.Accumulator
-	vm.ProgramCounter++
+	vm.IncrementProgramCounter()
 }

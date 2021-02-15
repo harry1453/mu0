@@ -33,6 +33,6 @@ func (instruction *jumpIfEqualInstruction) Execute(vm *VirtualMachineState) {
 	if vm.Accumulator == 0 {
 		vm.ProgramCounter = instruction.memoryAddress
 	} else {
-		vm.ProgramCounter++
+		vm.IncrementProgramCounter()
 	}
 }

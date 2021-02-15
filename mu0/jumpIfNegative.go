@@ -33,6 +33,6 @@ func (instruction *jumpIfNegativeInstruction) Execute(vm *VirtualMachineState) {
 	if int16(vm.Accumulator) < 0 {
 		vm.ProgramCounter = instruction.memoryAddress
 	} else {
-		vm.ProgramCounter++
+		vm.IncrementProgramCounter()
 	}
 }

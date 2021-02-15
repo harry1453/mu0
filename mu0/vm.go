@@ -14,6 +14,13 @@ type VirtualMachineState struct {
 	Memory         [MemorySize]uint16
 }
 
+func (vm *VirtualMachineState) IncrementProgramCounter() {
+	vm.ProgramCounter++
+	if vm.ProgramCounter >= MemorySize {
+		vm.ProgramCounter = 0
+	}
+}
+
 func RunProgram(programMachineCode []uint16, debug bool) (VirtualMachineState, error) {
 	vm := VirtualMachineState{
 		Running: true,

@@ -29,5 +29,5 @@ func (instruction *shiftRightInstruction) Disassemble() string {
 
 func (instruction *shiftRightInstruction) Execute(vm *VirtualMachineState) {
 	vm.Accumulator >>= 1
-	vm.ProgramCounter++
+	vm.IncrementProgramCounter()
 }
