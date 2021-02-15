@@ -1,21 +1,44 @@
 package main
 
 import (
+	"bufio"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"mu0-assembler/mu0"
+	"os"
+	"strings"
 )
 
 func main() {
-	fileData, err := ioutil.ReadFile("example.mu0")
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("Filename to assemble: ")
+		filename, err := reader.ReadString('\n')
+		if err != nil {
+			panic(err)
+		}
+		fmt.Print("Simulate? (y/N): ")
+		simulate, err := reader.ReadString('\n')
+		if err != nil {
+			panic(err)
+		}
+		simulate = strings.ToLower(strings.TrimSpace(simulate))
+		if err := assembleAndSimulate(strings.TrimSpace(filename), simulate == "y"); err != nil {
+			fmt.Printf("Error running: %#v\n", err)
+		}
+	}
+}
+
+func assembleAndSimulate(filename string, simulate bool) error {
+	fileData, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	machineCode, err := mu0.Assemble(string(fileData))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	fmt.Println("Machine code:")
@@ -31,8 +54,12 @@ func main() {
 			fmt.Println(parsedInstruction.Disassemble())
 		}
 	}
-
 	fmt.Println()
+
+	if !simulate {
+		return nil
+	}
+
 	fmt.Println("Running program...")
 	vm, err := mu0.RunProgram(machineCode, true)
 	if err != nil {
@@ -57,4 +84,7 @@ func main() {
 	for i := 0; i < lastUsedAddress+1; i++ {
 		fmt.Printf("0x%04x  | 0x%04x\n", i, vm.Memory[i])
 	}
+	fmt.Println()
+
+	return nil
 }
