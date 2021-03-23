@@ -42,7 +42,10 @@ func assembleAndSimulate(filename string, simulate bool) error {
 	}
 
 	fmt.Println("Machine code:")
-	fmt.Println(hex.EncodeToString(mu0.ByteArrayFromMachineCode(machineCode)))
+	for i := 0; i < len(machineCode); i++ {
+		bytes := mu0.ByteArrayFromMachineCode(machineCode[i : i+1])
+		fmt.Println("0x" + hex.EncodeToString(bytes))
+	}
 
 	fmt.Println()
 	fmt.Println("Disassembled:")
